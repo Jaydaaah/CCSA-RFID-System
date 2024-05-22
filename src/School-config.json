@@ -1,0 +1,17 @@
+{
+    "stdNameRegex": "^([A-Z][A-Za-z\\s]+),\\s+([A-Z][A-Za-z\\s]+)\\s+[A-Z][.]$",
+    "ccsaIDRegex": "^([0-9A-Z]{9})$",
+    "rfidTagRegex": "^([0-9]{10})$",
+
+    "Courses": [
+        "BSCS",
+        "BEEd",
+        "BSNEd",
+        "BSEd",
+        "BTVTEd-FSM",
+        "BSA",
+        "BSBA-HRM",
+        "BSBA-MM",
+        "BSBA-FM"
+    ]
+}
