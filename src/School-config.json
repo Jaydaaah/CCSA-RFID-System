@@ -13,5 +13,12 @@
         "BSBA-HRM",
         "BSBA-MM",
         "BSBA-FM"
+    ],
+    "ProgramProperties": [
+        "stdName",
+        "ccsaID",
+        "course",
+        "rfidTag",
+        "imageBuffer"
     ]
 }

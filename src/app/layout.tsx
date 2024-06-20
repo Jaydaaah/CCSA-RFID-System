@@ -22,8 +22,8 @@ export default function RootLayout({
         <html lang="en">
             <body className={font.className + " h-[100vh]"}>
                 <Providers className="flex flex-col h-full light text-foreground bg-background">
-                    {children}
                     <Toaster position="bottom-right" reverseOrder={false} />
+                    {children}
                 </Providers>
             </body>
         </html>

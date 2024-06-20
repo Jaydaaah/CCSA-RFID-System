@@ -137,7 +137,8 @@ interface responselogin {
 
 export async function LoginFetch(rfid: string) {
     const fetchW = fetchWrapper<responselogin>(`/login/${rfid}`);
-    return await fetchW();
+    const res =  await fetchW();
+    return res?._id;
 }
 
 interface FetchAccountDataResponse {

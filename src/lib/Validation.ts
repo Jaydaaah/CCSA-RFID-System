@@ -19,20 +19,18 @@ export function CreateValidationForNextUI(
         | "danger"
 ): [
     (text: string) => boolean,
-    (
-        text: string
-    ) => "default" | "primary" | "secondary" | "success" | "warning" | "danger",
+    (text: string) => "default" | "primary" | "secondary" | "success" | "warning" | "danger",
     (text: string) => string | null
 ] {
     function validationFn(text: string) {
-        if (text == "") return true;
+        if (text == "") return false;
         return !RegExp(regex).test(text);
     }
     function colorFn(text: string) {
-        return !validationFn(text) ? normal_color ?? "default" : error_color;
+        return (validationFn(text) || (text == "")) ? error_color : normal_color ?? "default";
     }
     function validatioErrorFn(text: string) {
-        return validationFn(text) ? validatioErrorMsg : null
+        return (validationFn(text) || (text == "")) ? validatioErrorMsg : null
     }
     return [validationFn, colorFn, validatioErrorFn];
 }

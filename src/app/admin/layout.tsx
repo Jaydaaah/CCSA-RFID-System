@@ -32,7 +32,7 @@ export default function RootLayout({
                     </NavbarBrand>
                 </Navbar>
             </header>
-            <main className="flex-grow mx-auto max-w-7xl px-6 flex">
+            <main className="flex-grow mx-auto w-full max-w-7xl px-6 flex">
                 <SideBar />
                 <div className="h-full flex flex-col pt-2">
                     {children}

@@ -7,53 +7,111 @@ import {
     DropdownItem,
     DropdownMenu,
     DropdownTrigger,
+    Tooltip,
 } from "@nextui-org/react";
-import { ChangeEvent, useCallback, useEffect, useId, useState } from "react";
-
-import schoolConfig from "../../../../School-config.json";
+import {
+    ChangeEvent,
+    useCallback,
+    useEffect,
+    useId,
+    useRef,
+    useState,
+} from "react";
 
 // Custom Hooks
-import { useAccountManager } from "../(contexts)/AccountManagerContext";
-import { usePage } from "../(contexts)/PageContext";
-import { useUserModal } from "./(modal)/(provider)/UserModalProvider";
-import { useSetFilter } from "../(contexts)/FilterContext";
+import { useAccountManager } from "@/Hooks/AccountManager";
+import { usePage } from "@/Hooks/PageContext";
+import { useUserModal } from "@/Hooks/Modal/UserFieldModal/UserModalHook";
 
 // Icons
 import { IoSearch } from "react-icons/io5";
 import { FaChevronDown } from "react-icons/fa";
 import { FaPlus } from "react-icons/fa";
+import { IoCloseOutline } from "react-icons/io5";
+
+// School Config
+import schoolConfig from "../../../../School-config.json";
+import { useFilter } from "@/Hooks/Filter";
 
 export default function TopContent() {
     const { accounts, reloadAccount } = useAccountManager();
     const { itemsPerPage, setCurrentPage, setItemsPerPage } = usePage();
+    const { invertArray, setFilter } = useFilter();
     const { callAdd } = useUserModal();
 
     const [search, setSearch] = useState("");
-    const [selectedCourse, setSelectedCourse] = useState<string[]>(schoolConfig.Courses);
+    const [isWorking, setWorking] = useState(false);
+    const [selectedCourse, setSelectedCourse] = useState<string[]>(
+        schoolConfig.Courses
+    );
 
-    const onRowsPerPageChange = (
-        event: React.ChangeEvent<HTMLSelectElement>
-    ) => {
-        setItemsPerPage(Number(event.target.value));
-        setCurrentPage(1);
-    };
+    const inputSearchRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        if (!isWorking) {
+            setFilter({
+                search: search.toLowerCase().trim(),
+                except_courses: invertArray(
+                    schoolConfig.Courses,
+                    selectedCourse
+                ),
+            });
+        }
+    }, [search, selectedCourse, isWorking]);
+
+    const onRowsPerPageChange = useCallback(
+        (event: React.ChangeEvent<HTMLSelectElement>) => {
+            setItemsPerPage(Number(event.target.value));
+            setCurrentPage(1);
+        },
+        [setItemsPerPage, setCurrentPage]
+    );
 
     const onSearchTextChange = useCallback(
         ({ target }: ChangeEvent<HTMLInputElement>) => {
             setSearch(target.value);
         },
-        []
+        [setSearch]
     );
 
     return (
         <div className="flex flex-col gap-4 pb-2">
             <div className="flex justify-between gap-3 items-end">
                 <Input
+                    ref={inputSearchRef}
                     isClearable
                     className="w-full sm:max-w-[44%]"
-                    placeholder="Search by name..."
+                    placeholder="Search..."
                     startContent={<IoSearch />}
+                    endContent={
+                        <span
+                            className="text-lg text-default-400 cursor-pointer hover:opacity-50"
+                            onClick={() => {
+                                setSearch("");
+                                setWorking(false);
+                            }}
+                        >
+                            <IoCloseOutline />
+                        </span>
+                    }
+                    value={search}
                     onChange={onSearchTextChange}
+                    onKeyUp={({ key }) => {
+                        if (key === "Enter") {
+                            setWorking(false);
+                        } else if (key == "Escape") {
+                            setSearch('');
+                            setWorking(false);
+                        } else {
+                            setWorking(true);
+                        }
+                    }}
+                    onBlur={() => {
+                        setWorking(false);
+                    }}
+                    onFocus={() => {
+                        setWorking(true);
+                    }}
                 />
                 <div className="flex gap-3">
                     <Button onPress={reloadAccount} variant="flat">
@@ -76,11 +134,17 @@ export default function TopContent() {
                             selectionMode="multiple"
                             variant="flat"
                             selectedKeys={selectedCourse}
+                            onSelectionChange={(keys: any) => {
+                                setSelectedCourse(Array.from(keys.values()));
+                            }}
                         >
                             {schoolConfig.Courses.map((course) => (
-                                    <DropdownItem key={course} className="capitalize">
-                                        {course}
-                                    </DropdownItem>
+                                <DropdownItem
+                                    key={course}
+                                    className="capitalize"
+                                >
+                                    {course}
+                                </DropdownItem>
                             ))}
                         </DropdownMenu>
                     </Dropdown>

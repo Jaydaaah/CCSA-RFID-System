@@ -1,6 +1,10 @@
-import { fetchImage } from "@/app/api/retrieve-image/fetch";
+"use client";
+
 import { User } from "@nextui-org/react";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+// Fetch function
+import { fetchImage } from "@/app/api/retrieve-image/fetch";
 
 interface Props {
     account: Record<string, string>

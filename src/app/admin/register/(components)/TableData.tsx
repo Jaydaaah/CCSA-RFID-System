@@ -1,4 +1,5 @@
 "use client";
+
 import {
     Chip,
     Table,
@@ -9,18 +10,25 @@ import {
     TableRow,
     Tooltip,
 } from "@nextui-org/react";
-import CustomFetchUser from "./CustomFetchUser";
+import { useCallback, useEffect, useId, useMemo } from "react";
 
-import { FaEdit } from "react-icons/fa";
-import { FaRegTrashAlt } from "react-icons/fa";
-import { useAccountManager } from "../(contexts)/AccountManagerContext";
-import { useCallback, useId, useMemo } from "react";
-import { rfidTagValidation } from "@/lib/Validation";
-import { useUserModal } from "./(modal)/(provider)/UserModalProvider";
-import { usePage } from "../(contexts)/PageContext";
+// Components
+import CustomFetchUser from "./CustomFetchUser";
 import BottomContent from "./BottomContent";
 import TopContent from "./TopContent";
-import { useAskActionModal } from "./(modal)/(provider)/AskActionModalProvider";
+
+// Icons
+import { FaEdit } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
+
+// Custom Hook
+import { useAccountManager } from "@/Hooks/AccountManager";
+import { useUserModal } from "@/Hooks/Modal/UserFieldModal/UserModalHook";
+import { usePage } from "@/Hooks/PageContext";
+import { useAskActionModal } from "@/Hooks/Modal/AskActionModal/AskActionModal";
+
+// Extra function
+import { rfidTagValidation } from "@/lib/Validation";
 
 interface Props {
     className?: string;
@@ -53,6 +61,10 @@ export default function TableData({ className }: Props) {
         };
     }, []);
 
+    useEffect(() => {
+        console.log("rendered");
+    });
+
     return (
         <Table
             layout="fixed"
@@ -66,12 +78,12 @@ export default function TableData({ className }: Props) {
                 <TableColumn width="90">Student Name</TableColumn>
                 <TableColumn className="text-center" width="30">Course</TableColumn>
                 <TableColumn className="text-center" width="30">
-                    RFID Tag
+                    Status
                 </TableColumn>
                 <TableColumn width="50">Action</TableColumn>
             </TableHeader>
             <TableBody items={items} emptyContent={"No rows to display."}>
-                {({ _id, stdName, ccsaID, course, rfidTag }) => {
+                {({ access, _id, stdName, ccsaID, course, rfidTag }) => {
                     return (
                         <TableRow key={_id ?? useId()}>
                             <TableCell className="">
@@ -84,16 +96,14 @@ export default function TableData({ className }: Props) {
                                 <Chip
                                     className="capitalize"
                                     color={
-                                        rfidTagValidation(rfidTag)
-                                            ? "danger"
-                                            : "success"
+                                        access == "Enabled"
+                                            ? "success"
+                                            : "danger"
                                     }
                                     variant="flat"
                                     size="sm"
                                 >
-                                    {rfidTagValidation(rfidTag)
-                                        ? "Not Secure"
-                                        : "Secure"}
+                                    {access}
                                 </Chip>
                             </TableCell>
                             <TableCell>
@@ -102,6 +112,7 @@ export default function TableData({ className }: Props) {
                                         <span
                                             className="text-lg text-default-400 cursor-pointer active:opacity-50"
                                             onClick={editHandler({
+                                                access,
                                                 _id,
                                                 stdName,
                                                 ccsaID,
